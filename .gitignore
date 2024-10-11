@@ -1,0 +1,59 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.db
+*.sqlite3
+# .env
+
+# Java (Spring)
+*.class
+*.jar
+*.war
+*.ear
+*.log
+target/
+build/
+*.iml
+.idea/
+*.gradle
+*.gradle/
+
+# JavaScript (Node.js)
+node_modules/
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+package-lock.json
+yarn.lock
+
+# Docker
+# **/Dockerfile
+# **/docker-compose.yml
+.dockerignore
+
+# IDEs
+.idea/
+.vscode/
+*.sublime-workspace
+*.sublime-project
+
+# Operating System files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+*.swp
+*.swo
+*~
+*.lock
+
+# Logs
+*.log
+
+# Miscellaneous
+*.tmp
+*.bak
+*.orig
+
+# Exclude any other temporary files or directories specific to your project
