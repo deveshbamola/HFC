@@ -91,20 +91,18 @@ def insert_statuses():
     return status_ids
 
 # Function to insert enrollments into the user_management.enrollments table
-def insert_enrollments(user_ids, program_ids, status_ids, n):
+def insert_enrollments(user_ids, program_ids, n):
     for _ in range(n):
         user_id = random.choice(user_ids)
         program_id = random.choice(program_ids)
-        start_date = fake.date_this_year()
-        end_date = fake.date_between(start_date=start_date, end_date='+30d')
-        status_id = random.choice(status_ids)
+        enrollment_date = fake.date_this_year()
 
         cursor.execute(
             """
             INSERT INTO user_management.enrollments
-            (user_id, program_id, start_date, end_date, status_id)
-            VALUES (%s, %s, %s, %s, %s)
-            """, (user_id, program_id, start_date, end_date, status_id)
+            (user_id, program_id, enrollment_date)
+            VALUES (%s, %s, %s)
+            """, (user_id, program_id, enrollment_date)
         )
 
     connection.commit()
@@ -117,17 +115,14 @@ def insert_tasks(program_ids, n):
         task_title = fake.unique.catch_phrase()
         task_description = fake.unique.text(max_nb_chars=200)
         total_time_required = random.randint(5, 20)
-        price = random.uniform(50, 200)
-        discount = random.randint(0, 20)
-        creation_date = fake.date_this_decade()
 
         cursor.execute(
             """
             INSERT INTO program_management.tasks
-            (program_id, task_title, task_description, total_time_required, price, discount, creation_date)
-            VALUES (%s, %s, %s, %s, %s, %s, %s)
+            (program_id, task_title, task_description, total_time_required)
+            VALUES (%s, %s, %s, %s)
             RETURNING task_id
-            """, (program_id, task_title, task_description, total_time_required, price, discount, creation_date)
+            """, (program_id, task_title, task_description, total_time_required)
         )
         task_id = cursor.fetchone()[0]
         task_ids.append(task_id)
@@ -212,7 +207,7 @@ def populate_data():
     status_ids = insert_statuses()
 
     # Insert enrollments
-    insert_enrollments(user_ids, program_ids, status_ids, 30)
+    insert_enrollments(user_ids, program_ids, 30)
 
     # Insert tasks
     task_ids = insert_tasks(program_ids, 50)

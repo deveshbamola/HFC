@@ -40,12 +40,9 @@ create table
         enrollment_id SERIAL PRIMARY KEY,
         user_id INTEGER,
         program_id INTEGER,
-        start_date DATE NOT NULL,
-        end_date DATE,
-        status_id INTEGER,
+        enrollment_date DATE NOT NULL,
         CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES user_management.users (user_id),
-        CONSTRAINT fk_program FOREIGN KEY (program_id) REFERENCES program_management.program (program_id),
-        CONSTRAINT fk_status FOREIGN KEY (status_id) REFERENCES program_management.status (status_id)
+        CONSTRAINT fk_program FOREIGN KEY (program_id) REFERENCES program_management.program (program_id)
     );
 
 create table
@@ -55,9 +52,6 @@ create table
         task_title VARCHAR UNIQUE NOT NULL,
         task_description VARCHAR UNIQUE NOT NULL,
         total_time_required INTEGER,
-        price FLOAT,
-        discount INTEGER DEFAULT 0,
-        creation_date DATE NOT NULL,
         CONSTRAINT fk_program FOREIGN KEY (program_id) REFERENCES program_management.program (program_id)
     );
 
