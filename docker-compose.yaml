@@ -1,0 +1,16 @@
+version: "1.0"
+services:
+  postgres-db:
+    build: .
+    container_name: postgres-db
+    ports:
+      - "${DB_PORT}:5432"
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - db_data:/var/lib/postgresql/data 
+  
+volumes:
+  db_data:
