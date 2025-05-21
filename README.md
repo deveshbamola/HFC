@@ -3,6 +3,7 @@ HFC aka hunt for career
 
 # PRE-Requisites
 Install python 
+Install Pip [python -m ensurepip --upgrade]
 Download docker and docker-compose
 
 # Setup
