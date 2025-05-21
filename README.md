@@ -2,9 +2,8 @@
 HFC aka hunt for career
 
 # PRE-Requisites
-Install python 
-Install Pip [python -m ensurepip --upgrade]
-Download docker and docker-compose
+1. Install python & Pip [python -m ensurepip --upgrade]
+2. Download docker and docker-compose
 
 # Setup
 run 'initialize.py' -> command "py initialize.py"
