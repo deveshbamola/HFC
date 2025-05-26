@@ -19,7 +19,7 @@ run 'initialize.py' -> command "py initialize.py"
     \dt *.*
 
 3. navigate through db using sql commands
-    select * from program_management.tasks_tracker;
+    `select * from program_management.tasks_tracker;`
 
 
 
