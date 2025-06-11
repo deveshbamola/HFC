@@ -1,22 +1,35 @@
-
-
-
-
 import psycopg2
 from faker import Faker
 import random
 from datetime import datetime, timedelta
+from dotenv import load_dotenv
+import os
+from psycopg2 import OperationalError
 
 # Initialize Faker
 fake = Faker()
+load_dotenv()
 
-# Connect to the PostgreSQL database
-# Establish a connection to your Postgres database
-connection = psycopg2.connect(database = "HFC", 
-                        user = "postgres", 
-                        host= 'localhost',
-                        password = "mysecretpassword",
-                        port = 5432)
+def get_connection():
+    dbname   = os.getenv("DB_NAME")
+    user     = os.getenv("DB_USER")
+    password = os.getenv("DB_PASSWORD")
+    host     = os.getenv("DB_HOST", "localhost")
+    port     = os.getenv("DB_PORT", 5432)
+
+    # debug print
+    # print(f"→ Connecting to Postgres with host={host!r}, port={port!r}, dbname={dbname!r}, user={user!r}")
+
+    try:
+        return psycopg2.connect(
+            dbname=dbname, user=user, password=password,
+            host=host, port=port
+        )
+    except OperationalError as e:
+        print("❌ OperationalError:", e)
+        raise
+
+connection = get_connection()
 cursor = connection.cursor()
 
 # Function to insert users into the user_management.users table
@@ -34,7 +47,7 @@ def insert_users(n):
 
         cursor.execute(
             """
-            INSERT INTO user_management.users
+            INSERT INTO user_management.user
             (first_name, last_name, email, phone_number, registration_date, date_of_birth, gender, activity_status)
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
             RETURNING user_id
@@ -75,14 +88,14 @@ def insert_programs(n):
 def insert_statuses():
     statuses = [("In-Progress", "#00FF00"), ("To-Do", "#FFFF00"), ('Done', "#FF0000")]
     status_ids = []
-    for label, hexcode in statuses:
+    for label, status in statuses:
         cursor.execute(
             """
             INSERT INTO program_management.status
-            (label, hexcode)
+            (label, status)
             VALUES (%s, %s)
             RETURNING status_id
-            """, (label, hexcode)
+            """, (label, status)
         )
         status_id = cursor.fetchone()[0]
         status_ids.append(status_id)
@@ -99,7 +112,7 @@ def insert_enrollments(user_ids, program_ids, n):
 
         cursor.execute(
             """
-            INSERT INTO user_management.enrollments
+            INSERT INTO user_management.enrollment
             (user_id, program_id, enrollment_date)
             VALUES (%s, %s, %s)
             """, (user_id, program_id, enrollment_date)
@@ -118,7 +131,7 @@ def insert_tasks(program_ids, n):
 
         cursor.execute(
             """
-            INSERT INTO program_management.tasks
+            INSERT INTO program_management.task
             (program_id, task_title, task_description, total_time_required)
             VALUES (%s, %s, %s, %s)
             RETURNING task_id
@@ -167,7 +180,7 @@ def insert_experts(n):
 
         cursor.execute(
             """
-            INSERT INTO expert_management.experts
+            INSERT INTO expert_management.expert
             (first_name, last_name, bio, email, phone_number, hire_date, date_of_birth, gender, activity_status)
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
             RETURNING expert_id
