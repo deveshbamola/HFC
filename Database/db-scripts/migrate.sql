@@ -5,7 +5,7 @@ create schema program_management;
 create schema expert_management;
 
 create table
-    user_management.users (
+    user_management.user (
         user_id SERIAL PRIMARY KEY,
         first_name VARCHAR(100) NOT NULL,
         last_name VARCHAR(100) NOT NULL,
@@ -14,7 +14,8 @@ create table
         registration_date DATE NOT NULL,
         date_of_birth DATE NOT NULL,
         Gender VARCHAR(100) NOT NULL,
-        activity_status BOOLEAN DEFAULT TRUE
+        activity_status BOOLEAN DEFAULT TRUE,
+        last_login timestamp NOT NULL DEFAULT NOW()
     );
 
 create table
@@ -22,36 +23,40 @@ create table
         program_id SERIAL PRIMARY KEY,
         program_title VARCHAR UNIQUE NOT NULL,
         program_description VARCHAR UNIQUE NOT NULL,
-        price INTEGER,
+        price DECIMAL(12,2) NOT NULL,
         discount INTEGER DEFAULT 0,
         total_time_required INTEGER,
-        creation_date DATE NOT NULL
+        creation_date DATE NOT NULL,
+        is_active BOOLEAN DEFAULT TRUE
     );
 
 create table
     program_management.status (
         status_id SERIAL PRIMARY KEY,
         label VARCHAR NOT NULL,
-        hexcode VARCHAR
+        status VARCHAR
     );
 
 create table
-    user_management.enrollments (
+    user_management.enrollment (
         enrollment_id SERIAL PRIMARY KEY,
         user_id INTEGER,
         program_id INTEGER,
         enrollment_date DATE NOT NULL,
-        CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES user_management.users (user_id),
+        CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES user_management.user (user_id),
         CONSTRAINT fk_program FOREIGN KEY (program_id) REFERENCES program_management.program (program_id)
     );
 
 create table
-    program_management.tasks (
+    program_management.task (
         task_id SERIAL PRIMARY KEY,
         program_id INTEGER NOT NULL,
         task_title VARCHAR UNIQUE NOT NULL,
         task_description VARCHAR UNIQUE NOT NULL,
         total_time_required INTEGER,
+        created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+        updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
+        is_active BOOLEAN DEFAULT TRUE,
         CONSTRAINT fk_program FOREIGN KEY (program_id) REFERENCES program_management.program (program_id)
     );
 
@@ -64,15 +69,15 @@ create table
         start_time timestamp NOT NULL,
         end_time timestamp NOT NULL,
         score INTEGER,
-        PRIMARY KEY (user_id, program_id, task_id),
+        is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
+        deleted_at TIMESTAMP NULL,
         CONSTRAINT fk_status FOREIGN KEY (status_id) REFERENCES program_management.status (status_id),
-        CONSTRAINT fk_program FOREIGN KEY (program_id) REFERENCES program_management.program (program_id),
-        CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES user_management.users (user_id),
-        CONSTRAINT fk_task FOREIGN KEY (task_id) REFERENCES program_management.tasks (task_id)
+        CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES user_management.user (user_id),
+        CONSTRAINT fk_task FOREIGN KEY (task_id) REFERENCES program_management.task (task_id)
     );
 
 create table
-    expert_management.experts (
+    expert_management.expert (
         expert_id SERIAL PRIMARY KEY,
         first_name VARCHAR(100) NOT NULL,
         last_name VARCHAR(100) NOT NULL,
@@ -82,7 +87,8 @@ create table
         hire_date DATE NOT NULL,
         date_of_birth DATE NOT NULL,
         Gender VARCHAR(100) NOT NULL,
-        activity_status BOOLEAN DEFAULT TRUE
+        activity_status BOOLEAN DEFAULT TRUE,
+        last_login timestamp NOT NULL DEFAULT NOW()
     );
 
 create table
@@ -90,7 +96,7 @@ create table
         authorship_id SERIAL PRIMARY KEY,
         expert_id INTEGER NOT NULL,
         program_id INTEGER NOT NULL,
-        CONSTRAINT fk_expert FOREIGN KEY (expert_id) REFERENCES expert_management.experts (expert_id),
+        CONSTRAINT fk_expert FOREIGN KEY (expert_id) REFERENCES expert_management.expert (expert_id),
         CONSTRAINT fk_program FOREIGN KEY (program_id) REFERENCES program_management.program (program_id)
     );
 
@@ -106,6 +112,6 @@ create table
         sme_id SERIAL PRIMARY KEY,
         expert_id INTEGER NOT NULL,
         speciality_id INTEGER NOT NULL,
-        CONSTRAINT fk_expert FOREIGN KEY (expert_id) REFERENCES expert_management.experts (expert_id),
+        CONSTRAINT fk_expert FOREIGN KEY (expert_id) REFERENCES expert_management.expert (expert_id),
         CONSTRAINT fk_speciality FOREIGN KEY (speciality_id) REFERENCES program_management.speciality (speciality_id)
     );

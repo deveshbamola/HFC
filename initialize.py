@@ -10,7 +10,7 @@ def install_requirements(requirements_file='initialize-dependencies/requirements
     except subprocess.CalledProcessError as e:
         print(f"Failed to install dependencies. Error: {e}")
 
-def initialize_datbase():
+def initialize_database():
     try:
         result = subprocess.run(['docker-compose', 'build', '--no-cache'], capture_output=True, text=True)
         print(result.stdout)
@@ -20,7 +20,7 @@ def initialize_datbase():
         result = subprocess.run(['docker-compose', 'down', '-v'], capture_output=True, text=True)
         print(result.stdout)
         print(result.stderr)
-        
+
         # Start the containers in detached mode
         result = subprocess.run(['docker-compose', 'up', '-d'], capture_output=True, text=True)
         print(result.stdout)
@@ -29,8 +29,8 @@ def initialize_datbase():
         print("Database HFC is ready to connect.")
     except subprocess.CalledProcessError as e:
         print(f"Failed to install dependencies. Error: {e}")
-    
-    
+
+
 def load_db():
     time.sleep(5)
     try:
@@ -44,5 +44,5 @@ def load_db():
 
 # Call the function to install dependencies
 install_requirements()
-initialize_datbase()
+initialize_database()
 load_db()
