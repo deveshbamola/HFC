@@ -208,6 +208,70 @@ def insert_authorship(expert_ids, program_ids):
 
     connection.commit()
 
+# Function to insert specialities into the program_management.speciality table
+def insert_specialities():
+    specialities = [
+        ("Data Science", "Advanced analytics and machine learning techniques"),
+        ("Web Development", "Full-stack web application development"),
+        ("Mobile Development", "iOS and Android application development"),
+        ("Cloud Computing", "AWS, Azure, and GCP cloud infrastructure"),
+        ("Cybersecurity", "Information security and ethical hacking"),
+        ("DevOps", "Continuous integration and deployment practices"),
+        ("AI/ML", "Artificial intelligence and machine learning"),
+        ("Database Management", "SQL and NoSQL database administration"),
+        ("UI/UX Design", "User interface and user experience design"),
+        ("Project Management", "Agile and traditional project management"),
+        ("Digital Marketing", "SEO, SEM, and social media marketing"),
+        ("Business Analytics", "Data-driven business decision making"),
+        ("Software Testing", "Quality assurance and automated testing"),
+        ("Network Engineering", "Network design and administration"),
+        ("Blockchain", "Cryptocurrency and distributed ledger technology")
+    ]
+
+    speciality_ids = []
+    for name, description in specialities:
+        cursor.execute(
+            """
+            INSERT INTO program_management.speciality
+            (speciality_name, speciality_description)
+            VALUES (%s, %s)
+            RETURNING speciality_id
+            """, (name, description)
+        )
+        speciality_id = cursor.fetchone()[0]
+        speciality_ids.append(speciality_id)
+
+    connection.commit()
+    return speciality_ids
+
+# Function to insert SME (Subject Matter Expert) relationships
+def insert_sme(expert_ids, speciality_ids, n):
+    """
+    Creates relationships between experts and their specialities.
+    Each expert can have multiple specialities.
+    """
+    inserted_pairs = set()  # To avoid duplicate expert-speciality pairs
+
+    for _ in range(n):
+        expert_id = random.choice(expert_ids)
+        speciality_id = random.choice(speciality_ids)
+
+        # Avoid duplicate combinations
+        pair = (expert_id, speciality_id)
+        if pair in inserted_pairs:
+            continue
+
+        cursor.execute(
+            """
+            INSERT INTO program_management.sme
+            (expert_id, speciality_id)
+            VALUES (%s, %s)
+            """, (expert_id, speciality_id)
+        )
+        inserted_pairs.add(pair)
+
+    connection.commit()
+
 # Main function to insert fake data into all tables
 def populate_data():
     # Insert users
@@ -233,6 +297,11 @@ def populate_data():
 
     # Insert authorship
     insert_authorship(expert_ids, program_ids)
+
+    speciality_ids = insert_specialities()
+
+    # NEW: Insert SME relationships
+    insert_sme(expert_ids, speciality_ids, 25)  # Create 25 expert-speciality relationships
 
 # Run the script to populate the database
 populate_data()
